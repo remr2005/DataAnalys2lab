@@ -32,7 +32,6 @@ def inv_f_norm(p, mu, s, t=0.001):
     return mid_x
 
 def test(x,n):
-    x= x/(8*n) * 100
     alpha = 0.05
     # задаю p0 и pa
     p0 = 4/8
@@ -47,19 +46,13 @@ def test(x,n):
     slow = inv_f_norm(alpha/2,mu0,sigma0)
     shigh=2*mu0-slow
     # по сути это тоже самое, но я просто делал по книге)))0
-    f_first_error = True if shigh >= x >= slow else False
-    p_value_test = True if p_value(x,mu0,sigma0) > alpha else False
+    f_first_error = True if shigh*8 >= x >= slow*8 else False
     # формула из методы
     mosh_prov = 1 - rho_norm(x,mu1,sigmaa)
     if f_first_error:
+        print(p_value(x,mu0,sigma0))
         print(x, slow, shigh)
         print("без p_value")
-        print("Нулевая гипотеза не опровергнута")
-        print(f"Мощность опроверки равна {mosh_prov}")
-        return True
-    if p_value_test:
-        print(x, slow, shigh)
-        print("c p_value")
         print("Нулевая гипотеза не опровергнута")
         print(f"Мощность опроверки равна {mosh_prov}")
         return True
