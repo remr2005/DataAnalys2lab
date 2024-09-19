@@ -14,25 +14,6 @@ def rho_norm(x, mu=0,s=1):
 def p_value(x, mu=0, s=1):
     return 2*(1-f_norm(x,mu,s)) if x >= mu else 2*f_norm(x,mu,s)
 
-def p_value_z_test(z):
-    return 2 * (1 - normal_cdf(abs(z)))
-
-# Кумулятивная функция распределения нормального распределения (CDF)
-def normal_cdf(x):
-    return 0.5 * (1 + erf(x / sqrt(2)))
-
-# дисперсия
-def disp(x:list) -> float:
-    return mean([i*i for i in x])-mean(x)**2
-
-# стандартное отклонение
-def stand_otk(x: list) -> float:
-    return sqrt(disp(x))
-
-# Размах
-def razm(x: list) -> float:
-    return max(x)-min(x)
-
 # Обратная функция распределения
 def inv_f_norm(p, mu, s, t=0.001):
     if mu != 0 or s != 1:
@@ -50,31 +31,49 @@ def inv_f_norm(p, mu, s, t=0.001):
             break
     return mid_x
 
-# z-тест
-def z_test(x:list, mu: float, s: float) -> float:
-    return ((mean(x)-mu)*sqrt(len(x)))/s
-
-# решение
-def first_task(data:list):
-    # считаем стандартное отклонение
-    s = stand_otk(data)
-    # выбираем уровень значимости
+def test(x,n):
+    x= x/(8*n) * 100
     alpha = 0.05
-    # составляем разные выборки и находим минимальную
-    for i in range(2, len(data)):
-        buf = []
-        for j in range(i):
-            buf.append(data[randint(0,len(data)-1)])
-        z_t = z_test(buf, 4, s)
-        p = p_value_z_test(z_t)
-        if alpha<p:
-            # стандартная ошибка
-            se = s/sqrt(i)
-            # квант/критическая граница альфы
-            z_a = inv_f_norm(p,4,s)
-            print(f"Количество часов: {i}, мощность проверки: {((z_a*se+4)-3)/se}")
-            return
-            
-    print("Нулевая теория не верна")
+    # задаю p0 и pa
+    p0 = 4/8
+    pa = 3/8
+    # вычисляю mu
+    mu0 = n*p0
+    mu1 = n*pa
+    # нахожу стандартное отклонение
+    sigma0=sqrt(n*p0*(1-p0))
+    sigmaa=sqrt(n*pa*(1-pa))
+    # нахожу нижнюю и верхнюю критическую точку 
+    slow = inv_f_norm(alpha/2,mu0,sigma0)
+    shigh=2*mu0-slow
+    # по сути это тоже самое, но я просто делал по книге)))0
+    f_first_error = True if shigh >= x >= slow else False
+    p_value_test = True if p_value(x,mu0,sigma0) > alpha else False
+    # формула из методы
+    mosh_prov = 1 - rho_norm(x,mu1,sigmaa)
+    if f_first_error:
+        print(x, slow, shigh)
+        print("без p_value")
+        print("Нулевая гипотеза не опровергнута")
+        print(f"Мощность опроверки равна {mosh_prov}")
+        return True
+    if p_value_test:
+        print(x, slow, shigh)
+        print("c p_value")
+        print("Нулевая гипотеза не опровергнута")
+        print(f"Мощность опроверки равна {mosh_prov}")
+        return True
+    return False
 
-print(p_value(3,4))
+def first_task(j):
+    # находим идеально кол-во чассов для заданного количетсва плитки
+    for i in range(100,10000):
+        if test(j,i):
+            print(f"Потребовалось {i} часов")
+            break
+
+def main():
+    first_task(700)
+
+if __name__ == "__main__":
+    main()
