@@ -32,7 +32,7 @@ def inv_f_norm(p, mu, s, t=0.001):
             break
     return mid_x
 
-def test(x,n, p0=4/9, pa=3/9):
+def test(x,n, p0=4/8, pa=3/8):
     alpha = 0.05
     beta = 0.8
     # вычисляю mu
@@ -47,7 +47,7 @@ def test(x,n, p0=4/9, pa=3/9):
     # формула из методы
     mosh_prov, _ = integrate.quad(rho_norm, slow, shigh, args=(mu1, sigmaa))
     mosh_prov = 1 - mosh_prov
-    p = p_value(x/9,mu0,sigma0)
+    p = p_value(x/8,mu0,sigma0)
     if p>alpha and mosh_prov>beta:
         print("Нулевая гипотеза не опровергнута")
         print(f"Мощность проверки равна {mosh_prov}")
