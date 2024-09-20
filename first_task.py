@@ -1,6 +1,7 @@
 from math import erf, sqrt, pi, exp, log
 from statistics import mean
 from random import randint
+from scipy import integrate
 
 # нормальное распределение функции
 def f_norm(x, mu=0, s=1):
@@ -31,11 +32,8 @@ def inv_f_norm(p, mu, s, t=0.001):
             break
     return mid_x
 
-def test(x,n):
+def test(x,n, p0=4/8, pa=3/8):
     alpha = 0.05
-    # задаю p0 и pa
-    p0 = 4/8
-    pa = 3/8
     # вычисляю mu
     mu0 = n*p0
     mu1 = n*pa
@@ -45,14 +43,10 @@ def test(x,n):
     # нахожу нижнюю и верхнюю критическую точку 
     slow = inv_f_norm(alpha/2,mu0,sigma0)
     shigh=2*mu0-slow
-    # по сути это тоже самое, но я просто делал по книге)))0
-    f_first_error = True if shigh*8 >= x >= slow*8 else False
     # формула из методы
-    mosh_prov = 1 - rho_norm(x,mu1,sigmaa)
-    if f_first_error:
-        print(p_value(x,mu0,sigma0))
-        print(x, slow, shigh)
-        print("без p_value")
+    mosh_prov, error = integrate.quad(rho_norm, slow, shigh, args=(mu1, sigmaa))
+    mosh_prov = 1 - mosh_prov
+    if p_value(x/8,mu0,sigma0)>alpha and mosh_prov>0.8:
         print("Нулевая гипотеза не опровергнута")
         print(f"Мощность опроверки равна {mosh_prov}")
         return True
@@ -61,7 +55,12 @@ def test(x,n):
 def first_task(j):
     # находим идеально кол-во чассов для заданного количетсва плитки
     for i in range(100,10000):
+        if test(j,i,3/8,4/8):
+            print("Плиточник кладет 3 кв.м")
+            print(f"Потребовалось {i} часов")
+            break
         if test(j,i):
+            print("Плиточник кладет 4 кв.м")
             print(f"Потребовалось {i} часов")
             break
 
