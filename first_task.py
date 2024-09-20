@@ -32,8 +32,9 @@ def inv_f_norm(p, mu, s, t=0.001):
             break
     return mid_x
 
-def test(x,n, p0=4/8, pa=3/8):
+def test(x,n, p0=4/9, pa=3/9):
     alpha = 0.05
+    beta = 0.8
     # вычисляю mu
     mu0 = n*p0
     mu1 = n*pa
@@ -44,25 +45,27 @@ def test(x,n, p0=4/8, pa=3/8):
     slow = inv_f_norm(alpha/2,mu0,sigma0)
     shigh=2*mu0-slow
     # формула из методы
-    mosh_prov, error = integrate.quad(rho_norm, slow, shigh, args=(mu1, sigmaa))
+    mosh_prov, _ = integrate.quad(rho_norm, slow, shigh, args=(mu1, sigmaa))
     mosh_prov = 1 - mosh_prov
-    if p_value(x/8,mu0,sigma0)>alpha and mosh_prov>0.8:
+    p = p_value(x/9,mu0,sigma0)
+    if p>alpha and mosh_prov>beta:
         print("Нулевая гипотеза не опровергнута")
-        print(f"Мощность опроверки равна {mosh_prov}")
-        return True
+        print(f"Мощность проверки равна {mosh_prov}")
+        return p
     return False
 
 def first_task(j):
     # находим идеально кол-во чассов для заданного количетсва плитки
     for i in range(100,10000):
-        if test(j,i,3/8,4/8):
-            print("Плиточник кладет 3 кв.м")
-            print(f"Потребовалось {i} часов")
-            break
-        if test(j,i):
-            print("Плиточник кладет 4 кв.м")
-            print(f"Потребовалось {i} часов")
-            break
+        h3 = test(j,i,3/8,4/8)
+        h4 = test(j,i)
+        # если обе гипотезы верны сравниваем какая из них ближе к мю(сравниваем p_value)
+        if bool(h3) and bool(h4) and h3>h4:print(f"Плиточник выкладывает 3 кв метра плитки в час\nКоличество часов {i}");break
+        elif bool(h3) and bool(h4):print(f"Плиточник выкладывает 4 кв метра плитки в час\nКоличество часов {i}");break
+        # если верна только одна то выводим только её
+        if bool(h3):print(f"Плиточник выкладывает 3 кв метра плитки в час\nКоличество часов {i}");break
+        if bool(h4):print(f"Плиточник выкладывает 4 кв метра плитки в час\nКоличество часов {i}");break
+            
 
 def main():
     first_task(700)
