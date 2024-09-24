@@ -48,7 +48,7 @@ def test(x,n, p0=4/8, pa=3/8):
     mosh_prov, _ = integrate.quad(rho_norm, slow, shigh, args=(mu1, sigmaa))
     mosh_prov = 1 - mosh_prov
     p = p_value(x/8,mu0,sigma0)
-    if p>alpha and mosh_prov>beta:
+    if p>=alpha and mosh_prov>=beta:
         print("Нулевая гипотеза не опровергнута")
         print(f"Мощность проверки равна {mosh_prov}")
         return p
@@ -60,11 +60,11 @@ def first_task(j):
         h3 = test(j,i,3/8,4/8)
         h4 = test(j,i)
         # если обе гипотезы верны сравниваем какая из них ближе к мю(сравниваем p_value)
-        if bool(h3) and bool(h4) and h3>h4:print(f"Плиточник выкладывает 3 кв метра плитки в час\nКоличество часов {i}");break
-        elif bool(h3) and bool(h4):print(f"Плиточник выкладывает 4 кв метра плитки в час\nКоличество часов {i}");break
+        if bool(h3) and bool(h4) and h3>h4:print(f"(обе теории верны)Плиточник выкладывает 3 кв метра плитки в час\nКоличество часов {i}");break
+        elif bool(h3) and bool(h4):print(f"(обе теории верны)Плиточник выкладывает 4 кв метра плитки в час\nКоличество часов {i}");break
         # если верна только одна то выводим только её
-        if bool(h3):print(f"Плиточник выкладывает 3 кв метра плитки в час\nКоличество часов {i}");break
         if bool(h4):print(f"Плиточник выкладывает 4 кв метра плитки в час\nКоличество часов {i}");break
+        if bool(h3):print(f"Плиточник выкладывает 3 кв метра плитки в час\nКоличество часов {i}");break
             
 
 def main():
