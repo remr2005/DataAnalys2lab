@@ -45,10 +45,9 @@ def test(x,n, p0=4/8, pa=3/8):
     slow = inv_f_norm(alpha/2,mu0,sigma0)
     shigh=2*mu0-slow
     # формула из методы
-    mosh_prov, _ = integrate.quad(rho_norm, slow, shigh, args=(mu1, sigmaa))
-    mosh_prov = 1 - mosh_prov
+    mosh_prov = 1-f_norm(shigh,mu1,sigmaa)+f_norm(slow,mu1,sigmaa)
     p = p_value(x/8,mu0,sigma0)
-    if p>=alpha and mosh_prov>=beta:
+    if p>=alpha and 1-f_norm(shigh,mu1,sigmaa)+f_norm(slow,mu1,sigmaa)>=beta:
         print("Нулевая гипотеза не опровергнута")
         print(f"Мощность проверки равна {mosh_prov}")
         return p

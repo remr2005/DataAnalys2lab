@@ -5,7 +5,7 @@ import numpy as np
 from numpy.linalg import solve as gauss
 from statistics import mean
 from math import sqrt
-from first_task import f_norm
+from first_task import f_norm, inv_f_norm
 from statistics import mean
 from random import randint
 from scipy import integrate
@@ -57,23 +57,31 @@ def approx_poly(x, t, r):
     return a
 
 def test(x, n):
+    alpha =0.05
     dataset = x.copy()
     t = list(range(len(dataset)))
     # Аппроксимация
     A_0 = approx_poly(dataset, t, n)
+    A_1 = approx_poly(dataset,t,n)
     # Вычисляем аппроксимированные значения
     x_0_approx = [sum(A_0[i] * ti ** i for i in range(len(A_0))) for ti in t]
+    x_1_approx = [sum(A_1[i] * ti ** i for i in range(len(A_0))) for ti in t]
     # Вычисление остатков (ошибок аппроксимации)
     epsilon0 = [x_0_approx[i]-dataset[i] for i in range(len(dataset))]
+    epsilon1 = [x_1_approx[i]-dataset[i] for i in range(len(dataset))]
     # Средние значения и стандартные отклонения
     mu0 = mean(epsilon0)
+    mu1 = mean(epsilon1)
     # стандартное отклонение
     sigma0 = standard_deviation(epsilon0)
+    sigma1 = standard_deviation(epsilon1)
     # Наибольшее отклонение
     max_dev0 = find_max_by_abs([i - mu0 for i in epsilon0])
     # Вычисление p-значения
-    return p_value(max_dev0+mu0, sigma0), x_0_approx
-
+    slow = inv_f_norm(alpha/2,mu0,sigma0)
+    shigh=2*mu0-slow
+    return p_value(max_dev0+mu0, sigma0), x_0_approx, 1-f_norm(shigh,mu1,sigma1)+f_norm(slow,mu1,sigma1)
+# f_norm118 - f_norm82
 def main():
     # Получение данных
     dataset = []
@@ -81,14 +89,17 @@ def main():
     dataset = [float(value.replace(',', '.')) for value in dataset]  # Преобразуем строки в числа
     max_p = -1
     max_n = 0
+    max_w=0
     x_appr = []
-    for i in range(3,50):
-        p, x_appr = test(dataset,i)
+    for i in range(5,50):
+        p, x_appr, w = test(dataset,i)
         if max_p<p:
             max_p=p
+            max_w = w
             max_n=i
     t = list(range(len(dataset)))
     print(f"Лучшее p_value:{max_p}")
+    print(f"Его w:{max_w}")
     # Визуализация данных и аппроксимаций
     plt.figure(figsize=(10, 6))
     plt.plot(t, dataset, label='Исходные данные', marker='o')
