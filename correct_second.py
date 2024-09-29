@@ -5,14 +5,8 @@ import numpy as np
 from numpy.linalg import solve as gauss
 from statistics import mean
 from math import sqrt
-from first_task import f_norm, inv_f_norm
+from first_task import f_norm, inv_f_norm, p_value
 from statistics import mean
-from random import randint
-from scipy import integrate
-
-def p_value(max_delta_x, sigma):
-    integral, _ = integrate.quad(f_norm, float("-inf"), -max_delta_x, args=(0, sigma))
-    return 2 * integral
 
 def GetData(data=[]):
     url = 'https://cryptocharts.ru/bitcoin-dollar/'
@@ -80,8 +74,9 @@ def test(x, n):
     # Вычисление p-значения
     slow = inv_f_norm(alpha/2,mu0,sigma0)
     shigh=2*mu0-slow
-    return p_value(max_dev0+mu0, sigma0), x_0_approx, 1-f_norm(shigh,mu1,sigma1)+f_norm(slow,mu1,sigma1)
+    return p_value(max_dev0+mu0, 0,sigma0), x_0_approx, 1-f_norm(shigh,mu1,sigma1)+f_norm(slow,mu1,sigma1)
 # f_norm118 - f_norm82
+
 def main():
     # Получение данных
     dataset = []

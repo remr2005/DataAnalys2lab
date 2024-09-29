@@ -1,7 +1,4 @@
-from math import erf, sqrt, pi, exp, log
-from statistics import mean
-from random import randint
-from scipy import integrate
+from math import erf, sqrt, pi, exp
 
 # нормальное распределение функции
 def f_norm(x, mu=0, s=1):
@@ -34,7 +31,7 @@ def inv_f_norm(p, mu, s, t=0.001):
 
 def test(x,n, p0=4/8, pa=3/8):
     alpha = 0.05
-    beta = 0.8
+    beta = 0.92
     # вычисляю mu
     mu0 = n*p0
     mu1 = n*pa
